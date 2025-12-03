@@ -177,21 +177,23 @@
       overflow: hidden;
     }
 
-    .filtros::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(210, 105, 30, 0.05),
-        transparent
-      );
-      animation: shimmer 3s infinite;
-    }
+.filtros::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(210, 105, 30, 0.05),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+  pointer-events: none;  /* Permite clics a través del pseudo-elemento */
+  z-index: 0;  /* Asegura que esté detrás */
+}
 
     .busqueda-container {
       flex: 1;
