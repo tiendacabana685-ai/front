@@ -407,7 +407,7 @@
 
   <div class="container">
     <div class="pago-card">
-      <a href="/tienda.html" class="back-link">← Volver a la tienda</a>
+      <a href="/index.html" class="back-link">← Volver a la tienda</a>
       
       <h1>💳 Procesar Pago</h1>
 
@@ -580,7 +580,7 @@
     }
 
     function volverATienda() {
-      window.location.href = '/tienda.html';
+      window.location.href = '/index.html';
     }
 
     // ============================================
@@ -679,7 +679,7 @@
 
         if (carrito.length === 0) {
           mostrarMensaje('El carrito está vacío', 'error');
-          setTimeout(() => window.location.href = '/tienda.html', 2000);
+          setTimeout(() => window.location.href = '/index.html', 2000);
           return;
         }
 
@@ -880,7 +880,7 @@
           
           // Redirigir después de 3 segundos
           setTimeout(() => {
-            window.location.href = '/tienda.html';
+            window.location.href = '/index.html';
           }, 3000);
         }
 
@@ -894,7 +894,7 @@
 
     function cancelar() {
       if (confirm('¿Estás seguro de que quieres cancelar el pago?')) {
-        window.location.href = '/tienda.html';
+        window.location.href = '/index.html';
       }
     }
 
