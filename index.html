@@ -1,83 +1,283 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pago con Stripe</title>
-  <script src="https://js.stripe.com/v3/"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Online - Ingredientes</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma; background-color: #f5f5f5; }
+
+    .top-bar {
+      background: #fff;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ececec;
+    }
+    .btn-regresar {
+      background: #6c63ff;
+      color: #fff;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .main-header {
+      text-align: center;
+      padding: 20px;
+    }
+    .titulo-tienda {
+      color: #6c63ff;
+      font-size: 36px;
+      margin-top: 10px;
+    }
+
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
+
+    .filtros {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .busqueda-container input {
+      width: 260px;
+      padding: 10px;
+      border: 2px solid #6c63ff;
+      border-radius: 8px;
+    }
+
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .producto-card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: .2s;
+    }
+
+    .producto-card:hover { transform: scale(1.02); }
+
+    .producto-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .precio { font-size: 20px; font-weight: bold; color: #6c63ff; }
+
+    .btn-agregar {
+      width: 100%;
+      padding: 10px;
+      background: #6c63ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .carrito-btn {
+      background: #ff7c60;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      padding: 40px 0;
+    }
+    .modal-contenido {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      position: relative;
+    }
+    .btn-cerrar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-pagar {
+      width: 100%;
+      background: #6c63ff;
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+  </style>
 </head>
+<body>
 
-<body style="background:#111; color:white; font-family:sans-serif; padding:40px;">
-  <h2>Pago en Stripe</h2>
+  <div class="top-bar">
+    <button class="btn-regresar" onclick="window.location.href='index.html'">← Inicio</button>
+    <span>Bienvenido a nuestra tienda</span>
+  </div>
 
-  <button id="btnPagar">Pagar $200 MXN</button>
+  <div class="main-header">
+    <h1 class="titulo-tienda">Tienda La Cabaña 🛒</h1>
+  </div>
 
-  <div id="card-element" style="margin-top:20px;"></div>
-  <div id="mensaje" style="margin-top:20px;"></div>
+  <div class="container">
 
-  <!-- Script con type="module" para permitir await -->
-  <script type="module">
+    <div class="filtros">
+      <div>
+        <label>Buscar ingrediente:</label>
+        <input type="text" id="busqueda" placeholder="Ej. Harina, papa..." onkeyup="buscar()">
+      </div>
 
-    //  Cargar configuración desde el backend (clave pública + URL API)
-    async function cargarConfig() {
-      const conf = await fetch("https://back-xde2.onrender.com").then(r => r.json());
-      window.STRIPE_PUBLIC_KEY = conf.stripePublicKey;
-      window.API_URL = conf.apiUrl;
-      console.log("Config cargada:", conf);
+      <button class="carrito-btn" onclick="abrirCarrito()">
+        Carrito (<span id="carrito-cantidad">0</span>)
+      </button>
+    </div>
+
+    <div id="productos-container" class="productos-grid">
+      <div class="loading">Cargando...</div>
+    </div>
+
+  </div>
+
+  <!-- Modal Carrito -->
+  <div id="modal-carrito" class="modal">
+    <div class="modal-contenido">
+      <button class="btn-cerrar" onclick="cerrarCarrito()">✕</button>
+
+      <h2>Mi Carrito</h2>
+      <div id="carrito-items"></div>
+
+      <h3 id="total-carrito">Total: $0</h3>
+
+      <button class="btn-pagar" onclick="irAPagar()">Proceder al pago 💳</button>
+    </div>
+  </div>
+
+
+<script>
+  let productos = [
+    {
+      id: 1,
+      title: "Harina de trigo",
+      description: "Harina para repostería y pan.",
+      price: 35,
+      cantidad: 1,
+      stock: 20,
+      image: "img/harina.jpg",
+      unidad: "1 kg"
+    },
+    {
+      id: 2,
+      title: "Azúcar refinada",
+      description: "Endulzante estándar.",
+      price: 28,
+      cantidad: 1,
+      stock: 10,
+      image: "img/azucar.jpg",
+      unidad: "1 kg"
     }
+  ];
 
-    // Esperamos que se cargue antes de continuar
-    await cargarConfig();
+  let carrito = [];
 
-    // >>> Inicializar Stripe con la clave pública cargada dinámicamente
-    const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
+  function cargarProductos() {
+    mostrarProductos(productos);
+  }
 
-    let card = null;
+  function mostrarProductos(lista) {
+    const container = document.getElementById("productos-container");
+    container.innerHTML = "";
 
-    async function iniciarStripe() {
-      const elements = stripe.elements();
-      card = elements.create("card");
-      card.mount("#card-element");
-    }
+    lista.forEach(p => {
+      container.innerHTML += `
+        <div class="producto-card">
+          <img class="producto-img" src="${p.image}" />
+          <h3>${p.title}</h3>
+          <p>${p.description}</p>
+          <p class="precio">$${p.price}</p>
+          <button class="btn-agregar" onclick="agregar(${p.id})">Agregar</button>
+        </div>
+      `;
+    });
+  }
 
-    // Montar card-element (elemento creado en un div)
-    await iniciarStripe();
+  function buscar() {
+    const texto = document.getElementById("busqueda").value.toLowerCase();
+    const filtrados = productos.filter(p => p.title.toLowerCase().includes(texto));
+    mostrarProductos(filtrados);
+  }
 
-    // clic en botón de pago
-    document.getElementById("btnPagar").addEventListener("click", async () => {
-      document.getElementById("mensaje").innerHTML = "Procesando...";
+  function agregar(id) {
+    const prod = productos.find(p => p.id == id);
+    const existe = carrito.find(c => c.id == id);
 
-      // Crear PaymentIntent desde el backend (llamando a la API)
-      const res = await fetch(window.API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          monto: 20000,      // $200 MXN
-          moneda: "mxn",
-          descripcion: "Compra en tienda"
-        })
-      });
+    if (existe) existe.cantidad++;
+    else carrito.push({ ...prod });
 
-      const data = await res.json();
-      const clientSecret = data.clientSecret;
+    actualizarCarrito();
+  }
 
-      // Confirmar pago en Stripe
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: card
-        }
-      });
+  function actualizarCarrito() {
+    const cantidad = carrito.reduce((s, i) => s + i.cantidad, 0);
+    document.getElementById("carrito-cantidad").textContent = cantidad;
 
-      // Validar resultado
-      if (result.error) {
-        document.getElementById("mensaje").innerHTML =
-          "Error en el pago: " + result.error.message;
-      } else if (result.paymentIntent.status === "succeeded") {
-        document.getElementById("mensaje").innerHTML =
-          "Pago exitoso<br>ID: " + result.paymentIntent.id;
-      }
+    let html = "";
+    let total = 0;
+
+    carrito.forEach(i => {
+      total += i.cantidad * i.price;
+      html += `
+        <p>${i.title} x${i.cantidad} — $${(i.price * i.cantidad).toFixed(2)}</p>
+      `;
     });
 
-  </script>
+    document.getElementById("carrito-items").innerHTML = html;
+    document.getElementById("total-carrito").textContent = "Total: $" + total.toFixed(2);
+  }
+
+  function abrirCarrito() {
+    document.getElementById("modal-carrito").style.display = "block";
+  }
+
+  function cerrarCarrito() {
+    document.getElementById("modal-carrito").style.display = "none";
+  }
+
+  function irAPagar() {
+    const total = carrito.reduce((s, i) => s + i.cantidad * i.price, 0);
+
+    sessionStorage.setItem("carrito", JSON.stringify(carrito));
+    sessionStorage.setItem("total", total.toFixed(2));
+
+    window.location.href = "pago.html";
+  }
+
+  window.onload = cargarProductos;
+</script>
+
 </body>
 </html>
