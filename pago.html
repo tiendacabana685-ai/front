@@ -3,913 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Procesar Pago - Mi Tienda Online</title>
-  <script src="https://js.stripe.com/v3/"></script>
+  <title>Tienda Online - Ingredientes</title>
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma; background-color: #f5f5f5; }
 
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      max-width: 800px;
-      width: 100%;
-    }
-
-    .pago-card {
-      background: white;
-      border-radius: 15px;
-      padding: 40px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      color: #667eea;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .resumen-pedido {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-
-    .resumen-item {
+    .top-bar {
+      background: #fff;
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #dee2e6;
+      align-items: center;
+      border-bottom: 2px solid #ececec;
     }
-
-    .resumen-item.subtotal {
-      font-weight: 500;
-      color: #495057;
-    }
-
-    .resumen-item.envio {
-      font-weight: 500;
-      color: #495057;
-    }
-
-    .resumen-item.total {
-      border-bottom: none;
-      font-weight: bold;
-      font-size: 1.2em;
-      color: #667eea;
-      padding-top: 15px;
-      margin-top: 10px;
-      border-top: 2px solid #667eea;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 600;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.3s;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    input:disabled {
-      background-color: #f0f0f0;
-      color: #666;
-      cursor: not-allowed;
-    }
-
-    #card-element {
-      padding: 12px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      background: white;
-    }
-
-    #card-errors {
-      color: #dc3545;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    button {
-      flex: 1;
-      padding: 15px;
+    .btn-regresar {
+      background: #6c63ff;
+      color: #fff;
+      padding: 10px 18px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
     }
-
-    .btn-pagar {
-      background: #51cf66;
-      color: white;
-    }
-
-    .btn-pagar:hover:not(:disabled) {
-      background: #40c057;
-      transform: translateY(-2px);
-    }
-
-    .btn-pagar:disabled {
-      background: #adb5bd;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-cancelar {
-      background: #ff6b6b;
-      color: white;
-    }
-
-    .btn-cancelar:hover {
-      background: #ff5252;
-    }
-
-    .loading {
-      display: none;
+    .main-header {
       text-align: center;
       padding: 20px;
     }
-
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
+    .titulo-tienda {
+      color: #6c63ff;
+      font-size: 36px;
+      margin-top: 10px;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
 
-    .mensaje {
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .mensaje.exito {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .mensaje.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    .mensaje.advertencia {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-
-    .back-link {
-      display: inline-block;
-      color: #667eea;
-      text-decoration: none;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
-    .debug-info {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .info-entrega {
-      background: #e7f5ff;
-      border: 2px solid #339af0;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .info-entrega h4 {
-      color: #1864ab;
-      margin-bottom: 8px;
-    }
-
-    .info-entrega p {
-      color: #1971c2;
-      font-size: 14px;
-    }
-
-    .info-horario {
-      background: #d3f9d8;
-      border: 2px solid #51cf66;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .info-horario.fuera-servicio {
-      background: #ffe3e3;
-      border: 2px solid #ff6b6b;
-    }
-
-    .info-horario h4 {
-      color: #2b8a3e;
-      margin-bottom: 8px;
+    .filtros {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .info-horario.fuera-servicio h4 {
-      color: #c92a2a;
-    }
-
-    .info-horario p {
-      color: #2f9e44;
-      font-size: 14px;
-    }
-
-    .info-horario.fuera-servicio p {
-      color: #e03131;
-    }
-
-    .hora-actual {
-      background: #f8f9fa;
-      padding: 8px 12px;
-      border-radius: 5px;
-      display: inline-block;
-      font-size: 13px;
-      color: #495057;
-      margin-top: 8px;
-    }
-
-    .nota-ubicacion {
-      background: #fff4e6;
-      border-left: 4px solid #fd7e14;
-      padding: 12px;
-      margin-top: 8px;
-      border-radius: 4px;
-      font-size: 14px;
-      color: #e8590c;
-    }
-
-    .form-section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #e9ecef;
-    }
-
-    .form-section:last-of-type {
-      border-bottom: none;
-    }
-
-    .form-section h3 {
-      color: #495057;
-      margin-bottom: 15px;
-      font-size: 18px;
-    }
-
-    .overlay-bloqueado {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-horario {
-      background: white;
-      padding: 40px;
-      border-radius: 15px;
-      max-width: 500px;
-      text-align: center;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-horario h2 {
-      color: #ff6b6b;
+      justify-content: space-between;
       margin-bottom: 20px;
     }
-
-    .modal-horario p {
-      color: #495057;
-      margin-bottom: 25px;
-      line-height: 1.6;
+    .busqueda-container input {
+      width: 260px;
+      padding: 10px;
+      border: 2px solid #6c63ff;
+      border-radius: 8px;
     }
 
-    .modal-horario .btn-volver {
-      background: #667eea;
-      color: white;
-      padding: 12px 30px;
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .producto-card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: .2s;
+    }
+
+    .producto-card:hover { transform: scale(1.02); }
+
+    .producto-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .precio { font-size: 20px; font-weight: bold; color: #6c63ff; }
+
+    .btn-agregar {
+      width: 100%;
+      padding: 10px;
+      background: #6c63ff;
+      color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s;
+      margin-top: 10px;
     }
 
-    .modal-horario .btn-volver:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
+    .carrito-btn {
+      background: #ff7c60;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
     }
 
-    .icono-reloj {
-      font-size: 48px;
-      margin-bottom: 15px;
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      padding: 40px 0;
+    }
+    .modal-contenido {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      position: relative;
+    }
+    .btn-cerrar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-pagar {
+      width: 100%;
+      background: #6c63ff;
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
     }
 
-    .costo-envio-badge {
-      background: #e7f5ff;
-      color: #1971c2;
-      padding: 4px 10px;
-      border-radius: 15px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
   </style>
 </head>
 <body>
-  <div class="overlay-bloqueado" id="overlay-horario">
-    <div class="modal-horario">
-      <div class="icono-reloj"></div>
-      <h2>Fuera de Horario de Servicio</h2>
-      <p>
-        Lo sentimos, solo aceptamos pedidos de <strong>8:00 AM a 5:00 PM</strong>.<br><br>
-        <span id="mensaje-horario-actual"></span><br><br>
-        Por favor, regresa durante nuestro horario de atención.
-      </p>
-      <button class="btn-volver" onclick="volverATienda()">Volver a la Tienda</button>
-    </div>
+
+  <div class="top-bar">
+    <button class="btn-regresar" onclick="window.location.href='index.html'">← Inicio</button>
+    <span>Bienvenido a nuestra tienda</span>
+  </div>
+
+  <div class="main-header">
+    <h1 class="titulo-tienda">Tienda La Cabaña 🛒</h1>
   </div>
 
   <div class="container">
-    <div class="pago-card">
-      <a href="/index.html" class="back-link">← Volver a la tienda</a>
-      
-      <h1>💳 Procesar Pago</h1>
 
-      <div id="debug-info" class="debug-info"></div>
-      <div id="mensaje" class="mensaje"></div>
-
-      <div id="info-horario-disponible" class="info-horario">
-        <h4>🕐 Horario de Servicio</h4>
-        <p><strong>Lunes a Domingo: 8:00 AM - 5:00 PM</strong></p>
-        <div class="hora-actual" id="hora-actual-display"></div>
+    <div class="filtros">
+      <div>
+        <label>Buscar ingrediente:</label>
+        <input type="text" id="busqueda" placeholder="Ej. Harina, papa..." onkeyup="buscar()">
       </div>
 
-      <div class="info-entrega">
-        <h4> Tiempo de Entrega</h4>
-        <p>Tu pedido llegará en <strong>2-3 horas</strong> después de confirmar el pago</p>
-      </div>
+      <button class="carrito-btn" onclick="abrirCarrito()">
+        Carrito (<span id="carrito-cantidad">0</span>)
+      </button>
+    </div>
 
-      <div class="resumen-pedido" id="resumen-pedido">
-        <h3 style="margin-bottom: 15px; color: #667eea;">
-          Resumen del Pedido
-          <span class="costo-envio-badge">+ $50 envío</span>
-        </h3>
-        <div id="items-pedido"></div>
-      </div>
+    <div id="productos-container" class="productos-grid">
+      <div class="loading">Cargando...</div>
+    </div>
 
-      <form id="payment-form">
-        <!-- SECCIÓN: INFORMACIÓN PERSONAL -->
-        <div class="form-section">
-          <h3>👤 Información Personal</h3>
-          
-          <div class="form-group">
-            <label for="nombre">Nombre Completo *</label>
-            <input type="text" id="nombre" required placeholder="Juan Pérez">
-          </div>
+  </div>
 
-          <div class="form-group">
-            <label for="email">Correo Electrónico *</label>
-            <input type="email" id="email" required placeholder="juan@ejemplo.com">
-          </div>
+  <!-- Modal Carrito -->
+  <div id="modal-carrito" class="modal">
+    <div class="modal-contenido">
+      <button class="btn-cerrar" onclick="cerrarCarrito()">✕</button>
 
-          <div class="form-group">
-            <label for="telefono">Número de Teléfono *</label>
-            <input type="tel" id="telefono" required placeholder="951 123 4567" pattern="[0-9]{3}[\s]?[0-9]{3}[\s]?[0-9]{4}">
-            <small style="color: #6c757d; font-size: 13px;">Formato: 951 123 4567</small>
-          </div>
-        </div>
+      <h2>Mi Carrito</h2>
+      <div id="carrito-items"></div>
 
-        <!-- SECCIÓN: DIRECCIÓN DE ENTREGA -->
-        <div class="form-section">
-          <h3>📍 Dirección de Entrega</h3>
-          
-          <div class="form-group">
-            <label for="ciudad">Ciudad *</label>
-            <input type="text" id="ciudad" value="Acatlima" disabled>
-            <div class="nota-ubicacion">
-              📌 Actualmente solo realizamos entregas en Acatlima
-            </div>
-          </div>
+      <h3 id="total-carrito">Total: $0</h3>
 
-          <div class="form-group">
-            <label for="direccion">Dirección Completa *</label>
-            <textarea id="direccion" required placeholder="Calle, número, referencias..."></textarea>
-            <small style="color: #6c757d; font-size: 13px;">Incluye referencias para facilitar la entrega</small>
-          </div>
-        </div>
-
-        <!-- SECCIÓN: INFORMACIÓN DE PAGO -->
-        <div class="form-section">
-          <h3>💳 Información de Pago</h3>
-          
-          <div class="form-group">
-            <label for="card-element">Datos de la Tarjeta *</label>
-            <div id="card-element"></div>
-            <div id="card-errors" role="alert"></div>
-          </div>
-        </div>
-
-        <div class="btn-group">
-          <button type="button" class="btn-cancelar" onclick="cancelar()">Cancelar</button>
-          <button type="submit" class="btn-pagar" id="submit-button">
-            Pagar Ahora
-          </button>
-        </div>
-      </form>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Procesando pago...</p>
-      </div>
+      <button class="btn-pagar" onclick="irAPagar()">Proceder al pago 💳</button>
     </div>
   </div>
 
-  <script>
-    let stripe;
-    let elements;
-    let cardElement;
-    let clientSecret;
-    const COSTO_ENVIO = 50; // $50 pesos de envío
 
-    // ============================================
-    // VERIFICACIÓN DE HORARIO
-    // ============================================
-    function verificarHorarioServicio() {
-      const ahora = new Date();
-      
-      // Obtener hora en zona horaria de México (UTC-6)
-      const opciones = { 
-        timeZone: 'America/Mexico_City',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false 
-      };
-      
-      const horaActualStr = ahora.toLocaleTimeString('es-MX', opciones);
-      const [horas, minutos] = horaActualStr.split(':').map(Number);
-      
-      // Mostrar hora actual
-      const horaDisplay = document.getElementById('hora-actual-display');
-      if (horaDisplay) {
-        horaDisplay.textContent = `Hora actual: ${ahora.toLocaleTimeString('es-MX', { 
-          timeZone: 'America/Mexico_City',
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: true 
-        })}`;
-      }
-      
-      // Horario de servicio: 8:00 AM (8) a 5:00 PM (17)
-      const horaInicio = 8;
-      const horaFin = 17;
-      
-      const dentroDeHorario = (horas > horaInicio || (horas === horaInicio && minutos >= 0)) && 
-                              (horas < horaFin || (horas === horaFin && minutos === 0));
-      
-      console.log(`Verificación de horario: ${horas}:${minutos} - Dentro de horario: ${dentroDeHorario}`);
-      
-      return {
-        disponible: dentroDeHorario,
-        horaActual: horaActualStr,
-        horas: horas,
-        minutos: minutos
-      };
+<script>
+  let productos = [
+    {
+      id: 1,
+      title: "Harina de trigo",
+      description: "Harina para repostería y pan.",
+      price: 35,
+      cantidad: 1,
+      stock: 20,
+      image: "img/harina.jpg",
+      unidad: "1 kg"
+    },
+    {
+      id: 2,
+      title: "Azúcar refinada",
+      description: "Endulzante estándar.",
+      price: 28,
+      cantidad: 1,
+      stock: 10,
+      image: "img/azucar.jpg",
+      unidad: "1 kg"
     }
+  ];
 
-    function mostrarModalFueraDeHorario(infoHorario) {
-      const overlay = document.getElementById('overlay-horario');
-      const mensajeHorario = document.getElementById('mensaje-horario-actual');
-      
-      let mensaje = `Son las ${infoHorario.horaActual}.`;
-      
-      if (infoHorario.horas < 8) {
-        mensaje += ` Abrimos a las 8:00 AM.`;
-      } else {
-        mensaje += ` Ya cerramos por hoy.`;
-      }
-      
-      mensajeHorario.textContent = mensaje;
-      overlay.style.display = 'flex';
-      
-      // Deshabilitar el formulario
-      document.getElementById('payment-form').style.opacity = '0.5';
-      document.getElementById('payment-form').style.pointerEvents = 'none';
-      document.getElementById('submit-button').disabled = true;
-      
-      // Cambiar estilo del info-horario
-      const infoHorarioDiv = document.getElementById('info-horario-disponible');
-      if (infoHorarioDiv) {
-        infoHorarioDiv.classList.add('fuera-servicio');
-      }
-    }
+  let carrito = [];
 
-    function volverATienda() {
-      window.location.href = '/index.html';
-    }
+  function cargarProductos() {
+    mostrarProductos(productos);
+  }
 
-    // ============================================
-    // FUNCIONES AUXILIARES
-    // ============================================
-    function mostrarDebug(mensaje) {
-      console.log('[DEBUG]', mensaje);
-      const debugDiv = document.getElementById('debug-info');
-      debugDiv.textContent = mensaje;
-      debugDiv.style.display = 'block';
-    }
+  function mostrarProductos(lista) {
+    const container = document.getElementById("productos-container");
+    container.innerHTML = "";
 
-    function mostrarMensaje(texto, tipo) {
-      const mensaje = document.getElementById('mensaje');
-      mensaje.textContent = texto;
-      mensaje.className = `mensaje ${tipo}`;
-      mensaje.style.display = 'block';
-      
-      // Auto-ocultar mensajes exitosos después de 5 segundos
-      if (tipo === 'exito') {
-        setTimeout(() => {
-          mensaje.style.display = 'none';
-        }, 5000);
-      }
-    }
-
-    function mostrarLoading(mostrar) {
-      document.getElementById('loading').style.display = mostrar ? 'block' : 'none';
-      document.getElementById('payment-form').style.display = mostrar ? 'none' : 'block';
-      document.getElementById('submit-button').disabled = mostrar;
-    }
-
-    function mostrarResumenPedido(carrito, subtotal) {
-      const container = document.getElementById('items-pedido');
-      let html = '';
-
-      carrito.forEach(item => {
-        const subtotalItem = item.price * item.cantidad;
-        html += `
-          <div class="resumen-item">
-            <span>${item.title} (x${item.cantidad})</span>
-            <span>$${subtotalItem.toFixed(2)}</span>
-          </div>
-        `;
-      });
-
-      // Agregar subtotal
-      html += `
-        <div class="resumen-item subtotal">
-          <span>Subtotal</span>
-          <span>$${subtotal.toFixed(2)}</span>
+    lista.forEach(p => {
+      container.innerHTML += `
+        <div class="producto-card">
+          <img class="producto-img" src="${p.image}" />
+          <h3>${p.title}</h3>
+          <p>${p.description}</p>
+          <p class="precio">$${p.price}</p>
+          <button class="btn-agregar" onclick="agregar(${p.id})">Agregar</button>
         </div>
       `;
+    });
+  }
 
-      // Agregar costo de envío
+  function buscar() {
+    const texto = document.getElementById("busqueda").value.toLowerCase();
+    const filtrados = productos.filter(p => p.title.toLowerCase().includes(texto));
+    mostrarProductos(filtrados);
+  }
+
+  function agregar(id) {
+    const prod = productos.find(p => p.id == id);
+    const existe = carrito.find(c => c.id == id);
+
+    if (existe) existe.cantidad++;
+    else carrito.push({ ...prod });
+
+    actualizarCarrito();
+  }
+
+  function actualizarCarrito() {
+    const cantidad = carrito.reduce((s, i) => s + i.cantidad, 0);
+    document.getElementById("carrito-cantidad").textContent = cantidad;
+
+    let html = "";
+    let total = 0;
+
+    carrito.forEach(i => {
+      total += i.cantidad * i.price;
       html += `
-        <div class="resumen-item envio">
-          <span>Costo de Envío 🚚</span>
-          <span>$${COSTO_ENVIO.toFixed(2)}</span>
-        </div>
+        <p>${i.title} x${i.cantidad} — $${(i.price * i.cantidad).toFixed(2)}</p>
       `;
-
-      // Agregar total
-      const totalConEnvio = subtotal + COSTO_ENVIO;
-      html += `
-        <div class="resumen-item total">
-          <span>TOTAL A PAGAR</span>
-          <span>$${totalConEnvio.toFixed(2)}</span>
-        </div>
-      `;
-
-      container.innerHTML = html;
-    }
-
-    // ============================================
-    // INICIALIZACIÓN DEL PAGO
-    // ============================================
-    async function inicializarPago() {
-      try {
-        // PASO 1: Verificar horario de servicio
-        const infoHorario = verificarHorarioServicio();
-        
-        if (!infoHorario.disponible) {
-          mostrarModalFueraDeHorario(infoHorario);
-          mostrarMensaje('Lo sentimos, estamos fuera de horario de servicio. Solo aceptamos pedidos de 8:00 AM a 5:00 PM.', 'advertencia');
-          return;
-        }
-
-        mostrarDebug('✅ Horario verificado - Servicio disponible');
-
-        // PASO 2: Obtener carrito del sessionStorage
-        const carrito = JSON.parse(sessionStorage.getItem('carrito') || '[]');
-        const subtotal = parseFloat(sessionStorage.getItem('total') || '0');
-
-        mostrarDebug(`Carrito: ${carrito.length} items, Subtotal: $${subtotal}`);
-
-        if (carrito.length === 0) {
-          mostrarMensaje('El carrito está vacío', 'error');
-          setTimeout(() => window.location.href = '/index.html', 2000);
-          return;
-        }
-
-        // Calcular total con envío
-        const totalConEnvio = subtotal + COSTO_ENVIO;
-        mostrarDebug(`Total con envío: $${totalConEnvio} (Subtotal: $${subtotal} + Envío: $${COSTO_ENVIO})`);
-
-        // Mostrar resumen del pedido
-        mostrarResumenPedido(carrito, subtotal);
-
-        // PASO 3: Conectar al backend
-        const backendUrl = "https://back-xde2.onrender.com";
-        mostrarDebug(`Conectando al backend en: ${backendUrl}`);
-
-        // Obtener configuración del backend
-        mostrarDebug('Obteniendo configuración...');
-        const configResponse = await fetch(`${backendUrl}/config`);
-        
-        if (!configResponse.ok) {
-          throw new Error(`Error del servidor: ${configResponse.status}. ¿Está corriendo el backend en https://localhost:4000?`);
-        }
-
-        const config = await configResponse.json();
-        mostrarDebug('Configuración obtenida correctamente');
-        
-        if (!config.stripePublicKey) {
-          throw new Error('No se recibió la clave pública de Stripe del servidor');
-        }
-
-        // PASO 4: Inicializar Stripe
-        mostrarDebug('Inicializando Stripe...');
-        stripe = Stripe(config.stripePublicKey);
-        elements = stripe.elements();
-        
-        cardElement = elements.create('card', {
-          style: {
-            base: {
-              fontSize: '16px',
-              color: '#32325d',
-              fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-              '::placeholder': {
-                color: '#aab7c4'
-              }
-            },
-            invalid: {
-              color: '#dc3545'
-            }
-          }
-        });
-        
-        cardElement.mount('#card-element');
-        mostrarDebug('Stripe Elements montado correctamente');
-        
-        cardElement.on('change', function(event) {
-          const displayError = document.getElementById('card-errors');
-          if (event.error) {
-            displayError.textContent = event.error.message;
-          } else {
-            displayError.textContent = '';
-          }
-        });
-
-        // PASO 5: Crear Payment Intent con el total que incluye envío
-        mostrarDebug('Creando Payment Intent...');
-        const montoEnCentavos = Math.round(totalConEnvio * 100);
-        mostrarDebug(`Monto a cobrar: $${totalConEnvio} MXN (${montoEnCentavos} centavos)`);
-
-        const paymentIntentResponse = await fetch(`${backendUrl}/api/pagos/crear`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            monto: montoEnCentavos,
-            moneda: 'mxn',
-            descripcion: `Compra de ${carrito.length} productos + envío ($${COSTO_ENVIO})`
-          })
-        });
-
-        if (!paymentIntentResponse.ok) {
-          const errorData = await paymentIntentResponse.json();
-          throw new Error(errorData.error || `Error al crear Payment Intent: ${paymentIntentResponse.status}`);
-        }
-
-        const paymentIntentData = await paymentIntentResponse.json();
-        
-        if (paymentIntentData.error) {
-          throw new Error(paymentIntentData.error);
-        }
-
-        if (!paymentIntentData.clientSecret) {
-          throw new Error('No se recibió el clientSecret del servidor');
-        }
-
-        clientSecret = paymentIntentData.clientSecret;
-        mostrarDebug('✅ Payment Intent creado exitosamente. Listo para procesar el pago.');
-        
-        // Guardar el total con envío en sessionStorage para referencia
-        sessionStorage.setItem('totalConEnvio', totalConEnvio.toString());
-        
-        // Ocultar mensaje de debug después de 3 segundos si todo está bien
-        setTimeout(() => {
-          document.getElementById('debug-info').style.display = 'none';
-        }, 3000);
-
-      } catch (error) {
-        console.error('Error al inicializar pago:', error);
-        mostrarMensaje('Error al inicializar el pago: ' + error.message, 'error');
-        mostrarDebug('❌ ERROR: ' + error.message);
-        document.getElementById('submit-button').disabled = true;
-      }
-    }
-
-    // ============================================
-    // PROCESAMIENTO DEL PAGO
-    // ============================================
-    document.getElementById('payment-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // Verificar horario nuevamente antes de procesar
-      const infoHorario = verificarHorarioServicio();
-      if (!infoHorario.disponible) {
-        mostrarMensaje('Lo sentimos, estamos fuera de horario de servicio. No podemos procesar tu pago en este momento.', 'error');
-        mostrarModalFueraDeHorario(infoHorario);
-        return;
-      }
-
-      if (!clientSecret) {
-        mostrarMensaje('Error: No se pudo inicializar el pago correctamente. Por favor, recarga la página.', 'error');
-        return;
-      }
-
-      // Validar campos adicionales
-      const telefono = document.getElementById('telefono').value;
-      const direccion = document.getElementById('direccion').value;
-      const nombre = document.getElementById('nombre').value;
-      const email = document.getElementById('email').value;
-
-      if (!telefono || !direccion || !nombre || !email) {
-        mostrarMensaje('Por favor completa todos los campos requeridos', 'error');
-        return;
-      }
-
-      mostrarLoading(true);
-      mostrarDebug('Procesando pago con Stripe...');
-
-      try {
-        const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: nombre,
-              email: email,
-              phone: telefono,
-              address: {
-                line1: direccion,
-                city: 'Acatlima'
-              }
-            }
-          }
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        if (paymentIntent.status === 'succeeded') {
-          const totalConEnvio = parseFloat(sessionStorage.getItem('totalConEnvio') || '0');
-          
-          mostrarMensaje('¡Pago exitoso! 🎉 Tu pedido llegará en 2-3 horas. Redirigiendo...', 'exito');
-          mostrarDebug('¡Pago completado con éxito! Pedido en camino.');
-          
-          // Información completa del pedido
-          const pedidoInfo = {
-            nombre: nombre,
-            email: email,
-            telefono: telefono,
-            direccion: direccion,
-            ciudad: 'Acatlima',
-            carrito: JSON.parse(sessionStorage.getItem('carrito')),
-            subtotal: parseFloat(sessionStorage.getItem('total')),
-            costoEnvio: COSTO_ENVIO,
-            total: totalConEnvio,
-            paymentIntentId: paymentIntent.id,
-            fechaPedido: new Date().toISOString(),
-            horaActual: infoHorario.horaActual
-          };
-          
-          console.log('Información completa del pedido:', pedidoInfo);
-          
-          // Aquí puedes enviar la información del pedido a tu backend
-          // await enviarPedidoAlBackend(pedidoInfo);
-          
-          // Limpiar carrito
-          sessionStorage.removeItem('carrito');
-          sessionStorage.removeItem('total');
-          sessionStorage.removeItem('totalConEnvio');
-          
-          // Redirigir después de 3 segundos
-          setTimeout(() => {
-            window.location.href = '/index.html';
-          }, 3000);
-        }
-
-      } catch (error) {
-        console.error('Error en el pago:', error);
-        mostrarMensaje('Error al procesar el pago: ' + error.message, 'error');
-        mostrarDebug('ERROR en pago: ' + error.message);
-        mostrarLoading(false);
-      }
     });
 
-    function cancelar() {
-      if (confirm('¿Estás seguro de que quieres cancelar el pago?')) {
-        window.location.href = '/index.html';
-      }
-    }
+    document.getElementById("carrito-items").innerHTML = html;
+    document.getElementById("total-carrito").textContent = "Total: $" + total.toFixed(2);
+  }
 
-    // Inicializar cuando cargue la página
-    document.addEventListener('DOMContentLoaded', () => {
-      inicializarPago();
-      
-      // Actualizar la hora actual cada minuto
-      setInterval(() => {
-        const infoHorario = verificarHorarioServicio();
-        if (!infoHorario.disponible && document.getElementById('overlay-horario').style.display !== 'flex') {
-          mostrarModalFueraDeHorario(infoHorario);
-        }
-      }, 60000); // Cada 60 segundos
-    });
-  </script>
+  function abrirCarrito() {
+    document.getElementById("modal-carrito").style.display = "block";
+  }
+
+  function cerrarCarrito() {
+    document.getElementById("modal-carrito").style.display = "none";
+  }
+
+  function irAPagar() {
+    const total = carrito.reduce((s, i) => s + i.cantidad * i.price, 0);
+
+    sessionStorage.setItem("carrito", JSON.stringify(carrito));
+    sessionStorage.setItem("total", total.toFixed(2));
+
+    window.location.href = "pago.html";
+  }
+
+  window.onload = cargarProductos;
+</script>
+
 </body>
 </html>
