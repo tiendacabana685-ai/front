@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Online - Ingredientes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* ANIMACIONES */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* BARRA SUPERIOR */
+    .top-bar {
+      background: linear-gradient(90deg, #8B4513 0%, #D2691E 100%);
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      animation: slideInLeft 0.6s ease-out;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .top-bar-left {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn-regresar {
+      background: #D2691E;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-regresar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.2);
+      transition: left 0.3s;
+    }
+
+    .btn-regresar:hover::before {
+      left: 100%;
+    }
+
+    .btn-regresar:hover {
+      background: #E07B2F;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* HEADER PRINCIPAL - CENTRADO */
+    .main-header {
+      background: linear-gradient(to bottom, #f7efe6 0%, #fff7f0 100%);
+      padding: 30px 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      animation: scaleIn 0.8s ease-out;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+      animation: float 3s ease-in-out infinite;
+      border: 3px solid #D2691E;
+      color: white;
+      font-weight: bold;
+    }
+
+    .titulo-tienda {
+      font-size: 56px;
+      color: #5b3b2b;
+      font-family: Georgia, serif;
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .icono-tienda {
+      font-size: 56px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* CONTENEDOR PRINCIPAL - SIN COLUMNA LATERAL */
+    .page-layout {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .container {
+      width: 100%;
+      padding: 20px 0;
+    }
+
+    .filtros {
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .filtros::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(210, 105, 30, 0.05),
+        transparent
+      );
+      animation: shimmer 3s infinite;
+    }
+
+    .busqueda-container {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .busqueda-container label {
+      display: block;
+      margin-bottom: 8px;
+      color: #5b3b2b;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    input {
+      padding: 14px;
+      width: 100%;
+      border: 2px solid #A0522D;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #D2691E;
+      box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .carrito-container {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .carrito-btn {
+      background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+      color: #fff; 
+      border: none;
+      padding: 14px 24px; 
+      border-radius: 25px;
+      font-weight: bold; 
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(139, 69, 19, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carrito-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .carrito-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .carrito-btn:hover {
+      background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(139, 69, 19, 0.4);
+    }
+
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+      gap: 30px;
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    .producto-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      animation: scaleIn 0.5s ease-out backwards;
+    }
+
+    .producto-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(210, 105, 30, 0.1),
+        transparent
+      );
+      transition: left 0.5s;
+    }
+
+    .producto-card:hover::before {
+      left: 100%;
+    }
+
+    .producto-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    /* Animación escalonada para las tarjetas */
+    .producto-card:nth-child(1) { animation-delay: 0.1s; }
+    .producto-card:nth-child(2) { animation-delay: 0.2s; }
+    .producto-card:nth-child(3) { animation-delay: 0.3s; }
+    .producto-card:nth-child(4) { animation-delay: 0.4s; }
+    .producto-card:nth-child(5) { animation-delay: 0.5s; }
+    .producto-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Badge de stock */
+    .stock-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+      animation: slideInRight 0.5s ease-out;
+    }
+
+    .stock-badge.bajo {
+      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .stock-badge.agotado {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    }
+
+    /* Unidad de medida */
+    .unidad-medida {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #2E7D32;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .producto-card:hover .unidad-medida {
+      transform: scale(1.05);
+    }
+
+    .producto-img {
+      width: 100%; 
+      height: 220px;
+      object-fit: cover; 
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: all 0.4s ease;
+    }
+
+    .producto-card:hover .producto-img {
+      transform: scale(1.08);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .producto-card h3 {
+      color: #5b3b2b;
+      margin-bottom: 8px;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    .producto-card:hover h3 {
+      color: #D2691E;
+    }
+
+    /* Descripción del producto */
+    .producto-descripcion {
+      color: #6c757d;
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 8px 0;
+      min-height: 40px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .producto-card .precio {
+      color: #8B4513;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 12px 0;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .producto-card:hover .precio {
+      transform: scale(1.1);
+      color: #D2691E;
+    }
+
+    .btn-agregar {
+      margin-top: 15px;
+      padding: 14px;
+      background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%);
+      color: #fff; 
+      border: none;
+      border-radius: 10px;
+      width: 100%; 
+      cursor: pointer;
+      font-size: 16px; 
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(210, 105, 30, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-agregar::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-agregar:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-agregar:hover {
+      background: linear-gradient(135deg, #E07B2F 0%, #D2691E 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(210, 105, 30, 0.4);
+    }
+
+    .btn-agregar:active {
+      transform: translateY(0);
+    }
+
+    .btn-agregar:disabled {
+      background: linear-gradient(135deg, #ccc 0%, #999 100%);
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    /* MODAL */
+    .modal { 
+      display:none; 
+      position:fixed; 
+      top:0; 
+      left:0; 
+      width:100%;
+      height:100%; 
+      background:rgba(0,0,0,0.7); 
+      padding:50px;
+      z-index: 1000;
+      overflow-y: auto;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-contenido {
+      background:#fff; 
+      padding:35px;
+      border-radius:20px; 
+      max-width:650px;
+      margin:auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: scaleIn 0.4s ease-out;
+    }
+
+    .modal-contenido h2 {
+      color: #5b3b2b;
+      margin-bottom: 25px;
+      font-size: 28px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .btn-cerrar {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-cerrar:hover {
+      background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .carrito-item {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      animation: slideInLeft 0.3s ease-out;
+    }
+
+    .carrito-item:hover {
+      background: #f9f9f9;
+      padding-left: 20px;
+    }
+
+    .carrito-item-info {
+      flex: 1;
+    }
+
+    .carrito-item-nombre {
+      font-weight: bold;
+      color: #5b3b2b;
+      margin-bottom: 4px;
+    }
+
+    .carrito-item-unidad {
+      font-size: 12px;
+      color: #2E7D32;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      padding: 3px 10px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    #total-carrito {
+      margin-top: 25px;
+      color: #8B4513;
+      font-size: 28px;
+      text-align: right;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      animation: slideInRight 0.5s ease-out;
+    }
+
+    .btn-pagar {
+      margin-top: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #D2691E 0%, #A0522D 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      width: 100%;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 15px rgba(210, 105, 30, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-pagar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.2);
+      transition: left 0.5s;
+    }
+
+    .btn-pagar:hover::before {
+      left: 100%;
+    }
+
+    .btn-pagar:hover {
+      background: linear-gradient(135deg, #E07B2F 0%, #D2691E 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(210, 105, 30, 0.4);
+    }
+
+    .btn-pagar:active {
+      transform: translateY(-1px);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .page-layout { padding: 0 12px; }
+      .main-header { padding: 20px; }
+      .titulo-tienda { font-size: 36px; }
+      .logo { width: 60px; height: 60px; font-size: 30px; }
+      .icono-tienda { font-size: 36px; }
+      .filtros { flex-direction: column; }
+      .productos-grid { grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); }
+    }
+
+    /* Animación de carga */
+    .loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 24px;
+      color: #8B4513;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- BARRA SUPERIOR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="btn-regresar" id="btn-inicio" onclick="regresarInicio()">← Regresar a Inicio</button>
+    </div>
+    <div>
+      <span style="font-size: 14px;"> Bienvenido a nuestra tienda</span>
+    </div>
+  </div>
+
+  <!-- HEADER PRINCIPAL - CENTRADO -->
+  <div class="main-header">
+    <div class="logo-section">
+      <div class="logo">
+        <img src="img/logo.png" alt="Logo" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+      </div>
+      <h1 class="titulo-tienda">
+        Tienda
+        <span class="icono-tienda"></span>
+      </h1>
+    </div>
+  </div>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="page-layout">
+    <div class="container">
+
+      <div class="filtros">
+        <div class="busqueda-container">
+          <label> Buscar ingredientes</label>
+          <input type="text" id="busqueda" placeholder="Ej: Papa, Arroz, Harina..." onkeyup="buscarPorIngrediente(event)">
+        </div>
+        <div class="carrito-container">
+          <button class="carrito-btn" onclick="abrirCarrito()">
+            Carrito (<span id="carrito-cantidad">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <div id="productos-container" class="productos-grid">
+        <div class="loading">Cargando productos... </div>
+      </div>
+
+      <!-- MODAL CARRITO -->
+      <div id="modal-carrito" class="modal">
+        <div class="modal-contenido">
+          <button onclick="cerrarCarrito()" class="btn-cerrar">✕</button>
+          <h2>Mi Carrito de Compras</h2>
+          <div id="carrito-items"></div>
+          <h3 id="total-carrito">Total: $0.00</h3>
+          <button class="btn-pagar" onclick="irAPagar()">Proceder al Pago 💳</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  let productos = [];
+  let carrito = [];
+
+  function regresarInicio() {
+    window.location.href = "/inicio.html";
+  }
+
+  function buscarPorIngrediente(event) {
+    const texto = event.target.value.toLowerCase();
+    
+    if (texto === "") {
+      mostrarProductos(productos);
+    } else {
+      const filtrados = productos.filter(p => 
+        p.title.toLowerCase().includes(texto) || 
+        p.description.toLowerCase().includes(texto)
+      );
+      mostrarProductos(filtrados);
+    }
+  }
+
+  async function cargarProductos() {
+    const ingredientes = [
+      // HARINAS Y GRANOS
+      {
+        id: 1,
+        title: "Harina de trigo",
+        price: 28.00,
+        description: "Harina de trigo todo uso, ideal para pan y repostería.",
+        image: "img/Harina de trigo.jpeg",
+        category: "harinas",
+        cantidad: 1,
+        stock: 45,
+        unidad: "1 kg"
+      },
+      {
+        id: 2,
+        title: "Harina de maíz",
+        price: 22.00,
+        description: "Harina de maíz nixtamalizado para tortillas y tamales.",
+        image: "img/Harina de maíz.jpeg",
+        category: "harinas",
+        cantidad: 1,
+        stock: 38,
+        unidad: "1 kg"
+      },
+      {
+        id: 3,
+        title: "Harina integral",
+        price: 35.00,
+        description: "Harina integral de trigo, rica en fibra.",
+        image: "img/Harina integral.jpeg",
+        category: "harinas",
+        cantidad: 1,
+        stock: 28,
+        unidad: "1 kg"
+      },
+      
+      // ACEITES
+      {
+        id: 4,
+        title: "Aceite de oliva",
+        price: 85.00,
+        description: "Aceite de oliva extra virgen, primera extracción en frío.",
+        image: "img/aceite de oliva.jpeg",
+        category: "aceites",
+        cantidad: 1,
+        stock: 23,
+        unidad: "1 L"
+      },
+      {
+        id: 5,
+        title: "Aceite vegetal",
+        price: 45.00,
+        description: "Aceite vegetal para cocinar, bajo en grasas saturadas.",
+        image: "img/Aceite vegetal.jpeg",
+        category: "aceites",
+        cantidad: 1,
+        stock: 67,
+        unidad: "1 L"
+      },
+      {
+        id: 6,
+        title: "Aceite de coco",
+        price: 95.00,
+        description: "Aceite de coco orgánico, ideal para cocina saludable.",
+        image: "img/Aceite de coco.jpeg",
+        category: "aceites",
+        cantidad: 1,
+        stock: 18,
+        unidad: "500 ml"
+      },
+      
+      // AZÚCARES Y ENDULZANTES
+      {
+        id: 7,
+        title: "Azúcar morena",
+        price: 25.00,
+        description: "Azúcar morena natural sin refinar, sabor intenso.",
+        image: "img/Azúcar morena.jpeg",
+        category: "azucares",
+        cantidad: 1,
+        stock: 67,
+        unidad: "1 kg"
+      },
+      {
+        id: 8,
+        title: "Azúcar blanca",
+        price: 22.00,
+        description: "Azúcar blanca refinada estándar.",
+        image: "img/Azúcar blanca.jpeg",
+        category: "azucares",
+        cantidad: 1,
+        stock: 82,
+        unidad: "1 kg"
+      },
+      {
+        id: 9,
+        title: "Miel de abeja",
+        price: 120.00,
+        description: "Miel de abeja 100% pura y natural.",
+        image: "img/Miel de abeja.jpeg",
+        category: "azucares",
+        cantidad: 1,
+        stock: 34,
+        unidad: "500 g"
+      },
+      
+      // LÁCTEOS Y QUESOS
+      {
+        id: 10,
+        title: "Queso Boursin Echalote",
+        price: 189.00,
+        description: "Queso francés cremoso con finas hierbas y echalote.",
+        image: "img/echalote-boursin-w.jpg",
+        category: "lacteos",
+        cantidad: 1,
+        stock: 8,
+        unidad: "150 g"
+      },
+      {
+        id: 11,
+        title: "Queso manchego",
+        price: 165.00,
+        description: "Queso manchego añejo, sabor intenso.",
+        image: "img/Queso manchego.jpeg",
+        category: "lacteos",
+        cantidad: 1,
+        stock: 15,
+        unidad: "250 g"
+      },
+      {
+        id: 12,
+        title: "Queso Oaxaca",
+        price: 75.00,
+        description: "Queso Oaxaca tipo hebra, perfecto para quesadillas.",
+        image: "img/Queso Oaxaca.jpeg",
+        category: "lacteos",
+        cantidad: 1,
+        stock: 42,
+        unidad: "400 g"
+      },
+      {
+        id: 13,
+        title: "Crema ácida",
+        price: 38.00,
+        description: "Crema ácida fresca para acompañar tus platillos.",
+        image: "img/Crema ácida.jpeg",
+        category: "lacteos",
+        cantidad: 1,
+        stock: 56,
+        unidad: "250 ml"
+      },
+      {
+        id: 14,
+        title: "Mantequilla sin sal",
+        price: 58.00,
+        description: "Mantequilla sin sal, ideal para repostería.",
+        image: "img/Mantequilla sin sal.jpeg",
+        category: "lacteos",
+        cantidad: 1,
+        stock: 48,
+        unidad: "250 g"
+      },
+      
+      // CARNES Y PESCADOS
+      {
+        id: 15,
+        title: "Carne de Langosta",
+        price: 450.00,
+        description: "Carne de langosta fresca congelada, premium.",
+        image: "img/Carne de Langosta.jpeg",
+        category: "mariscos",
+        cantidad: 1,
+        stock: 12,
+        unidad: "500 g"
+      },
+      {
+        id: 16,
+        title: "Bacalao",
+        price: 685.00,
+        description: "Tiras de bacalao congelado del Atlántico.",
+        image: "img/Bacalao.jpeg",
+        category: "pescados",
+        cantidad: 1,
+        stock: 5,
+        unidad: "1 kg"
+      },
+      {
+        id: 17,
+        title: "Camarones",
+        price: 285.00,
+        description: "Camarones grandes limpios y desvenados.",
+        image: "img/Camarones.jpeg",
+        category: "mariscos",
+        cantidad: 1,
+        stock: 28,
+        unidad: "500 g"
+      },
+      {
+        id: 18,
+        title: "Salmón",
+        price: 320.00,
+        description: "Filete de salmón fresco del Pacífico.",
+        image: "img/Salmón.jpeg",
+        category: "pescados",
+        cantidad: 1,
+        stock: 18,
+        unidad: "500 g"
+      },
+      {
+        id: 19,
+        title: "Pavo Entero",
+        price: 320.00,
+        description: "Pavo entero fresco, ideal para ocasiones especiales.",
+        image: "img/3.jpg",
+        category: "aves",
+        cantidad: 1,
+        stock: 15,
+        unidad: "4-5 kg"
+      },
+      {
+        id: 20,
+        title: "Pechuga de pollo",
+        price: 95.00,
+        description: "Pechuga de pollo fresca sin hueso.",
+        image: "img/Pechuga de pollo.jpeg",
+        category: "aves",
+        cantidad: 1,
+        stock: 65,
+        unidad: "1 kg"
+      },
+      {
+        id: 21,
+        title: "Carne molida de res",
+        price: 110.00,
+        description: "Carne molida de res magra 80/20.",
+        image: "img/Carne molida de res.jpeg",
+        category: "carnes",
+        cantidad: 1,
+        stock: 52,
+        unidad: "1 kg"
+      },
+      
+      // VERDURAS Y TUBÉRCULOS
+      {
+        id: 22,
+        title: "Papa",
+        price: 24.00,
+        description: "Papa blanca fresca de calidad, versatil para cualquier preparación.",
+        image: "img/1.png",
+        category: "verduras",
+        cantidad: 1,
+        stock: 89,
+        unidad: "1 kg"
+      },
+      {
+        id: 23,
+        title: "Cebolla blanca",
+        price: 28.00,
+        description: "Cebolla blanca fresca, ingrediente esencial.",
+        image: "img/Cebolla blanca.jpeg",
+        category: "verduras",
+        cantidad: 1,
+        stock: 76,
+        unidad: "1 kg"
+      },
+      {
+        id: 24,
+        title: "Tomate",
+        price: 32.00,
+        description: "Tomate bola rojo maduro y jugoso.",
+        image: "img/Tomate.jpeg",
+        category: "verduras",
+        cantidad: 1,
+        stock: 68,
+        unidad: "1 kg"
+      },
+      {
+        id: 25,
+        title: "Zanahoria",
+        price: 22.00,
+        description: "Zanahoria fresca, rica en vitamina A.",
+        image: "img/Zanahoria.jpeg",
+        category: "verduras",
+        cantidad: 1,
+        stock: 84,
+        unidad: "1 kg"
+      },
+      {
+        id: 26,
+        title: "Ajo",
+        price: 45.00,
+        description: "Ajo fresco en cabeza, aroma intenso.",
+        image: "img/Ajo.jpeg",
+        category: "verduras",
+        cantidad: 1,
+        stock: 58,
+        unidad: "250 g"
+      },
+      {
+        id: 27,
+        title: "Chile jalapeño",
+        price: 35.00,
+        description: "Chile jalapeño fresco, nivel medio de picor.",
+        image: "img/Chile jalapeño.jpeg",
+        category: "verduras",
+        cantidad: 1,
+        stock: 47,
+        unidad: "500 g"
+      },
+      
+      // LEGUMBRES Y GRANOS
+      {
+        id: 28,
+        title: "Arroz blanco",
+        price: 26.00,
+        description: "Arroz blanco de grano largo, calidad premium.",
+        image: "img/arroz.jpeg",
+        category: "granos",
+        cantidad: 1,
+        stock: 52,
+        unidad: "1 kg"
+      },
+      {
+        id: 29,
+        title: "Frijol negro",
+        price: 32.00,
+        description: "Frijol negro seco de primera calidad.",
+        image: "img/Frijol negro.jpeg",
+        category: "legumbres",
+        cantidad: 1,
+        stock: 64,
+        unidad: "1 kg"
+      },
+      {
+        id: 30,
+        title: "Lentejas",
+        price: 28.00,
+        description: "Lentejas secas, fuente excelente de proteína vegetal.",
+        image: "img/Lentejas.jpeg",
+        category: "legumbres",
+        cantidad: 1,
+        stock: 34,
+        unidad: "500 g"
+      },
+      {
+        id: 31,
+        title: "Garbanzos",
+        price: 35.00,
+        description: "Garbanzos secos, deliciosa legumbre nutritiva.",
+        image: "img/Garbanzos.jpeg",
+        category: "legumbres",
+        cantidad: 1,
+        stock: 41,
+        unidad: "500 g"
+      },
+      {
+        id: 32,
+        title: "Soja",
+        price: 32.00,
+        description: "Soja seca texturizada, alta en proteínas.",
+        image: "img/soja.jpeg",
+        category: "legumbres",
+        cantidad: 1,
+        stock: 0,
+        unidad: "500 g"
+      },
+      
+      // PASTAS Y CEREALES
+      {
+        id: 33,
+        title: "Pasta fusilli",
+        price: 28.00,
+        description: "Pasta fusilli de sémola de trigo durum.",
+        image: "img/Pasta fusilli.jpeg",
+        category: "pastas",
+        cantidad: 1,
+        stock: 72,
+        unidad: "500 g"
+      },
+      {
+        id: 34,
+        title: "Pasta espagueti",
+        price: 26.00,
+        description: "Pasta espagueti tradicional italiana.",
+        image: "img/Pasta espagueti.jpeg",
+        category: "pastas",
+        cantidad: 1,
+        stock: 88,
+        unidad: "500 g"
+      },
+      {
+        id: 35,
+        title: "Avena en hojuelas",
+        price: 38.00,
+        description: "Avena en hojuelas natural, rica en fibra.",
+        image: "img/Avena en hojuelas.jpeg",
+        category: "cereales",
+        cantidad: 1,
+        stock: 56,
+        unidad: "1 kg"
+      },
+      
+      // ESPECIAS Y CONDIMENTOS
+      {
+        id: 36,
+        title: "Sal de mar",
+        price: 18.00,
+        description: "Sal de mar natural sin refinar.",
+        image: "img/Sal de mar.jpeg",
+        category: "condimentos",
+        cantidad: 1,
+        stock: 95,
+        unidad: "1 kg"
+      },
+      {
+        id: 37,
+        title: "Pimienta negra",
+        price: 48.00,
+        description: "Pimienta negra molida, aroma intenso.",
+        image: "img/Pimienta negra.jpeg",
+        category: "especias",
+        cantidad: 1,
+        stock: 43,
+        unidad: "100 g"
+      },
+      {
+        id: 38,
+        title: "Orégano seco",
+        price: 25.00,
+        description: "Orégano seco mexicano de primera.",
+        image: "img/Orégano seco.jpeg",
+        category: "especias",
+        cantidad: 1,
+        stock: 38,
+        unidad: "50 g"
+      },
+      {
+        id: 39,
+        title: "Comino molido",
+        price: 32.00,
+        description: "Comino molido, esencial en la cocina mexicana.",
+        image: "img/Comino molido.jpeg",
+        category: "especias",
+        cantidad: 1,
+        stock: 29,
+        unidad: "100 g"
+      },
+      {
+        id: 40,
+        title: "Canela en raja",
+        price: 42.00,
+        description: "Canela de Ceylon en raja, aroma dulce.",
+        image: "img/Canela en raja.jpeg",
+        category: "especias",
+        cantidad: 1,
+        stock: 31,
+        unidad: "100 g"
+      },
+      
+      // ENLATADOS Y CONSERVAS
+      {
+        id: 41,
+        title: "Tomate en lata",
+        price: 22.00,
+        description: "Tomate pelado en cubos, listo para usar.",
+        image: "img/Tomate en latajpeg",
+        category: "enlatados",
+        cantidad: 1,
+        stock: 67,
+        unidad: "400 g"
+      },
+      {
+        id: 42,
+        title: "Maíz dulce",
+        price: 18.00,
+        description: "Granos de maíz dulce en conserva.",
+        image: "img/Maíz dulce.jpeg",
+        category: "enlatados",
+        cantidad: 1,
+        stock: 74,
+        unidad: "350 g"
+      },
+      {
+        id: 43,
+        title: "Atún en agua",
+        price: 25.00,
+        description: "Atún aleta amarilla en agua, bajo en grasa.",
+        image: "img/Atún en agua.jpeg",
+        category: "enlatados",
+        cantidad: 1,
+        stock: 82,
+        unidad: "140 g"
+      },
+      
+      // FRUTAS SECAS Y NUECES
+      {
+        id: 44,
+        title: "Almendras",
+        price: 165.00,
+        description: "Almendras naturales sin sal, ricas en vitamina E.",
+        image: "img/Almendras.jpeg",
+        category: "frutos-secos",
+        cantidad: 1,
+        stock: 26,
+        unidad: "500 g"
+      },
+      {
+        id: 45,
+        title: "Nueces",
+        price: 185.00,
+        description: "Nueces de Castilla sin cáscara.",
+        image: "img/Nueces.jpeg",
+        category: "frutos-secos",
+        cantidad: 1,
+        stock: 19,
+        unidad: "500 g"
+      },
+      {
+        id: 46,
+        title: "Cacahuates",
+        price: 55.00,
+        description: "Cacahuates tostados sin sal.",
+        image: "img/Cacahuates.jpeg",
+        category: "frutos-secos",
+        cantidad: 1,
+        stock: 48,
+        unidad: "500 g"
+      },
+      
+      // CHOCOLATE Y REPOSTERÍA
+      {
+        id: 47,
+        title: "Chocolate oscuro",
+        price: 75.00,
+        description: "Chocolate amargo 70% cacao, ideal para repostería.",
+        image: "img/Chocolate oscuro.jpeg",
+        category: "reposteria",
+        cantidad: 1,
+        stock: 36,
+        unidad: "200 g"
+      },
+      {
+        id: 48,
+        title: "Vainilla en extracto",
+        price: 95.00,
+        description: "Extracto puro de vainilla natural.",
+        image: "img/Vainilla en extracto.jpeg",
+        category: "reposteria",
+        cantidad: 1,
+        stock: 22,
+        unidad: "100 ml"
+      },
+      {
+        id: 49,
+        title: "Polvo para hornear",
+        price: 28.00,
+        description: "Polvo para hornear Royal, doble acción.",
+        image: "img/Polvo para hornear.jpeg",
+        category: "reposteria",
+        cantidad: 1,
+        stock: 58,
+        unidad: "100 g"
+      },
+      {
+        id: 50,
+        title: "Cacao en polvo",
+        price: 65.00,
+        description: "Cacao en polvo sin azúcar, 100% puro.",
+        image: "img/Cacao en polvo.jpeg",
+        category: "reposteria",
+        cantidad: 1,
+        stock: 44,
+        unidad: "250 g"
+      },
+    ];
+
+    productos = ingredientes;
+    mostrarProductos(productos);
+  }
+
+  function mostrarProductos(lista) {
+    const container = document.getElementById("productos-container");
+    container.innerHTML = "";
+
+    if (lista.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #6d4c41; animation: fadeIn 0.5s ease-out;">
+          <h3 style="font-size: 28px; margin-bottom: 15px;">😕 No se encontraron productos</h3>
+          <p style="font-size: 16px;">Intenta con otra búsqueda</p>
+        </div>
+      `;
+      return;
+    }
+
+    lista.forEach(p => {
+      let stockClass = '';
+      let stockText = '';
+      
+      if (p.stock === 0) {
+        stockClass = 'agotado';
+        stockText = '❌ Agotado';
+      } else if (p.stock <= 10) {
+        stockClass = 'bajo';
+        stockText = `⚠️ Quedan ${p.stock}`;
+      } else {
+        stockClass = '';
+        stockText = `✅ Stock: ${p.stock}`;
+      }
+
+      const deshabilitado = p.stock === 0 ? 'disabled' : '';
+      const textoBoton = p.stock === 0 ? 'Agotado' : 'Agregar al carrito';
+
+      container.innerHTML += `
+        <div class="producto-card">
+          <span class="stock-badge ${stockClass}">${stockText}</span>
+          <img src="${p.image}" class="producto-img" alt="${p.title}">
+          <h3>${p.title}</h3>
+          <span class="unidad-medida"> ${p.unidad}</span>
+          <p class="producto-descripcion">${p.description}</p>
+          <p class="precio">$${p.price.toFixed(2)}</p>
+          <button class="btn-agregar" onclick="agregar(${p.id})" ${deshabilitado}>${textoBoton}</button>
+        </div>
+      `;
+    });
+  }
+
+  function agregar(id) {
+    const producto = productos.find(p => p.id == id);
+    
+    if (producto.stock === 0) {
+      alert('Lo sentimos, este producto está agotado 😔');
+      return;
+    }
+
+    const existe = carrito.find(i => i.id == id);
+
+    if (existe) {
+      if (existe.cantidad >= producto.stock) {
+        alert(`Lo sentimos, solo hay ${producto.stock} unidades disponibles de este producto 📦`);
+        return;
+      }
+      existe.cantidad++;
+    } else {
+      carrito.push({ ...producto });
+    }
+
+    producto.stock--;
+    
+    const searchValue = document.getElementById('busqueda').value;
+    if (searchValue === '') {
+      mostrarProductos(productos);
+    } else {
+      buscarPorIngrediente({ target: { value: searchValue } });
+    }
+
+    const btn = event.target;
+    const originalText = btn.textContent;
+    const originalBg = btn.style.background;
+    
+    btn.textContent = '✓ ¡Agregado!';
+    btn.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+    btn.style.transform = 'scale(1.05)';
+    
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = originalBg;
+      btn.style.transform = 'scale(1)';
+    }, 800);
+
+    actualizarCarrito();
+  }
+
+  function actualizarCarrito() {
+    const cantidad = carrito.reduce((t, i) => t + i.cantidad, 0);
+    const elemento = document.getElementById("carrito-cantidad");
+    elemento.textContent = cantidad;
+    
+    if (cantidad > 0) {
+      elemento.style.animation = 'pulse 0.5s ease-out';
+      setTimeout(() => {
+        elemento.style.animation = '';
+      }, 500);
+    }
+
+    mostrarItemsCarrito();
+  }
+
+  function mostrarItemsCarrito() {
+    const div = document.getElementById("carrito-items");
+    let html = "";
+    let total = 0;
+
+    if (carrito.length === 0) {
+      html = '<p style="text-align:center; color:#999; padding:30px; font-size:16px;">Tu carrito está vacío</p>';
+    } else {
+      carrito.forEach((item, index) => {
+        total += item.cantidad * item.price;
+        html += `
+          <div class="carrito-item" style="animation-delay: ${index * 0.1}s;">
+            <div class="carrito-item-info">
+              <div class="carrito-item-nombre">${item.title}</div>
+              <div class="carrito-item-unidad">📦 ${item.unidad} x ${item.cantidad}</div>
+            </div>
+            <span style="color:#8B4513; font-weight:bold; font-size:18px;">$${(item.cantidad * item.price).toFixed(2)}</span>
+          </div>
+        `;
+      });
+    }
+
+    div.innerHTML = html;
+    document.getElementById("total-carrito").textContent = "Total: $" + total.toFixed(2);
+  }
+
+  function abrirCarrito() {
+    const modal = document.getElementById("modal-carrito");
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+
+  function cerrarCarrito() {
+    const modal = document.getElementById("modal-carrito");
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+
+  function irAPagar() {
+    if (carrito.length === 0) {
+      alert('Tu carrito está vacío');
+      return;
+    }
+    
+    const total = carrito.reduce((sum, item) => sum + item.price * item.cantidad, 0);
+    sessionStorage.setItem("carrito", JSON.stringify(carrito));
+    sessionStorage.setItem("total", total.toFixed(2));
+    window.location.href = "/pago.html";
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById("modal-carrito");
+    if (event.target == modal) {
+      cerrarCarrito();
+    }
+  }
+
+  // Cargar productos al iniciar
+  cargarProductos();
+</script>
+
+</body>
+</html>
