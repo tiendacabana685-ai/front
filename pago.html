@@ -389,6 +389,194 @@
       font-weight: 600;
       margin-left: 8px;
     }
+/* MODAL DE ÉXITO */
+.modal-exito {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-exito-contenido {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 550px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-exito-contenido .icono-exito {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounce 0.6s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.modal-exito-contenido h2 {
+  color: #51cf66;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.modal-exito-contenido .info-pedido {
+  background: #e7f5ff;
+  border: 2px solid #339af0;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.modal-exito-contenido .info-pedido h3 {
+  color: #1864ab;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.modal-exito-contenido .info-pedido ul {
+  list-style: none;
+  padding: 0;
+  color: #495057;
+  line-height: 1.8;
+}
+
+.modal-exito-contenido .info-pedido ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid #dae3ed;
+}
+
+.modal-exito-contenido .info-pedido ul li:last-child {
+  border-bottom: none;
+}
+
+.modal-exito-contenido .info-pedido ul li strong {
+  color: #1971c2;
+}
+
+.modal-exito-contenido .btn-cerrar-exito {
+  background: #51cf66;
+  color: white;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 20px;
+}
+
+.modal-exito-contenido .btn-cerrar-exito:hover {
+  background: #40c057;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(81, 207, 102, 0.4);
+}
+
+.icono-telefono {
+  font-size: 24px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+/* MODAL DE ERROR */
+.modal-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-error-contenido {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modal-error-contenido .icono-error {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.modal-error-contenido h2 {
+  color: #ff6b6b;
+  margin-bottom: 20px;
+  font-size: 26px;
+}
+
+.modal-error-contenido p {
+  color: #495057;
+  margin-bottom: 25px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.modal-error-contenido .btn-volver-tienda {
+  background: #667eea;
+  color: white;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.modal-error-contenido .btn-volver-tienda:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.detalle-error {
+  background: #fff4e6;
+  border-left: 4px solid #fd7e14;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #d9480f;
+  text-align: left;
+}
+    
   </style>
 </head>
 <body>
@@ -580,7 +768,7 @@
     }
 
     function volverATienda() {
-      window.location.href = '/index.html';
+      window.location.href = 'index.html';
     }
 
     // ============================================
@@ -679,7 +867,7 @@
 
         if (carrito.length === 0) {
           mostrarMensaje('El carrito está vacío', 'error');
-          setTimeout(() => window.location.href = '/index.html', 2000);
+          setTimeout(() => window.location.href = 'index.html', 2000);
           return;
         }
 
@@ -796,105 +984,108 @@
     // ============================================
     // PROCESAMIENTO DEL PAGO
     // ============================================
-    document.getElementById('payment-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
+// ============================================
+// PROCESAMIENTO DEL PAGO
+// ============================================
+document.getElementById('payment-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      // Verificar horario nuevamente antes de procesar
-      const infoHorario = verificarHorarioServicio();
-      if (!infoHorario.disponible) {
-        mostrarMensaje('Lo sentimos, estamos fuera de horario de servicio. No podemos procesar tu pago en este momento.', 'error');
-        mostrarModalFueraDeHorario(infoHorario);
-        return;
-      }
+  // Verificar horario nuevamente antes de procesar
+  const infoHorario = verificarHorarioServicio();
+  if (!infoHorario.disponible) {
+    mostrarMensaje('Lo sentimos, estamos fuera de horario de servicio. No podemos procesar tu pago en este momento.', 'error');
+    mostrarModalFueraDeHorario(infoHorario);
+    return;
+  }
 
-      if (!clientSecret) {
-        mostrarMensaje('Error: No se pudo inicializar el pago correctamente. Por favor, recarga la página.', 'error');
-        return;
-      }
+  if (!clientSecret) {
+    mostrarMensaje('Error: No se pudo inicializar el pago correctamente. Por favor, recarga la página.', 'error');
+    return;
+  }
 
-      // Validar campos adicionales
-      const telefono = document.getElementById('telefono').value;
-      const direccion = document.getElementById('direccion').value;
-      const nombre = document.getElementById('nombre').value;
-      const email = document.getElementById('email').value;
+  // Validar campos adicionales
+  const telefono = document.getElementById('telefono').value;
+  const direccion = document.getElementById('direccion').value;
+  const nombre = document.getElementById('nombre').value;
+  const email = document.getElementById('email').value;
 
-      if (!telefono || !direccion || !nombre || !email) {
-        mostrarMensaje('Por favor completa todos los campos requeridos', 'error');
-        return;
-      }
+  if (!telefono || !direccion || !nombre || !email) {
+    mostrarMensaje('Por favor completa todos los campos requeridos', 'error');
+    return;
+  }
 
-      mostrarLoading(true);
-      mostrarDebug('Procesando pago con Stripe...');
+  mostrarLoading(true);
+  mostrarDebug('Procesando pago con Stripe...');
 
-      try {
-        const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: nombre,
-              email: email,
-              phone: telefono,
-              address: {
-                line1: direccion,
-                city: 'Acatlima'
-              }
-            }
+  try {
+    const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name: nombre,
+          email: email,
+          phone: telefono,
+          address: {
+            line1: direccion,
+            city: 'Acatlima'
           }
-        });
-
-        if (error) {
-          throw error;
         }
-
-        if (paymentIntent.status === 'succeeded') {
-          const totalConEnvio = parseFloat(sessionStorage.getItem('totalConEnvio') || '0');
-          
-          mostrarMensaje('¡Pago exitoso! 🎉 Tu pedido llegará en 2-3 horas. Redirigiendo...', 'exito');
-          mostrarDebug('¡Pago completado con éxito! Pedido en camino.');
-          
-          // Información completa del pedido
-          const pedidoInfo = {
-            nombre: nombre,
-            email: email,
-            telefono: telefono,
-            direccion: direccion,
-            ciudad: 'Acatlima',
-            carrito: JSON.parse(sessionStorage.getItem('carrito')),
-            subtotal: parseFloat(sessionStorage.getItem('total')),
-            costoEnvio: COSTO_ENVIO,
-            total: totalConEnvio,
-            paymentIntentId: paymentIntent.id,
-            fechaPedido: new Date().toISOString(),
-            horaActual: infoHorario.horaActual
-          };
-          
-          console.log('Información completa del pedido:', pedidoInfo);
-          
-          // Aquí puedes enviar la información del pedido a tu backend
-          // await enviarPedidoAlBackend(pedidoInfo);
-          
-          // Limpiar carrito
-          sessionStorage.removeItem('carrito');
-          sessionStorage.removeItem('total');
-          sessionStorage.removeItem('totalConEnvio');
-          
-          // Redirigir después de 3 segundos
-          setTimeout(() => {
-            window.location.href = '/index.html';
-          }, 3000);
-        }
-
-      } catch (error) {
-        console.error('Error en el pago:', error);
-        mostrarMensaje('Error al procesar el pago: ' + error.message, 'error');
-        mostrarDebug('ERROR en pago: ' + error.message);
-        mostrarLoading(false);
       }
     });
 
+    if (error) {
+      // MOSTRAR MODAL DE ERROR
+      mostrarModalError(error.message);
+      mostrarLoading(false);
+      return;
+    }
+
+    if (paymentIntent.status === 'succeeded') {
+      const totalConEnvio = parseFloat(sessionStorage.getItem('totalConEnvio') || '0');
+      
+      mostrarDebug('¡Pago completado con éxito! Pedido en camino.');
+      mostrarLoading(false);
+      
+      // MOSTRAR MODAL DE ÉXITO
+      mostrarModalExito(direccion);
+      
+      // Información completa del pedido
+      const pedidoInfo = {
+        nombre: nombre,
+        email: email,
+        telefono: telefono,
+        direccion: direccion,
+        ciudad: 'Acatlima',
+        carrito: JSON.parse(sessionStorage.getItem('carrito')),
+        subtotal: parseFloat(sessionStorage.getItem('total')),
+        costoEnvio: COSTO_ENVIO,
+        total: totalConEnvio,
+        paymentIntentId: paymentIntent.id,
+        fechaPedido: new Date().toISOString(),
+        horaActual: infoHorario.horaActual
+      };
+      
+      console.log('Información completa del pedido:', pedidoInfo);
+      
+      // Aquí puedes enviar la información del pedido a tu backend
+      // await enviarPedidoAlBackend(pedidoInfo);
+      
+      // Limpiar carrito
+      sessionStorage.removeItem('carrito');
+      sessionStorage.removeItem('total');
+      sessionStorage.removeItem('totalConEnvio');
+    }
+
+  } catch (error) {
+    console.error('Error en el pago:', error);
+    mostrarModalError(error.message);
+    mostrarLoading(false);
+  }
+});
+
     function cancelar() {
       if (confirm('¿Estás seguro de que quieres cancelar el pago?')) {
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
       }
     }
 
@@ -910,6 +1101,110 @@
         }
       }, 60000); // Cada 60 segundos
     });
+
+// ============================================
+// FUNCIONES PARA MODALES DE ÉXITO Y ERROR
+// ============================================
+function mostrarModalExito(direccion) {
+  const modal = document.getElementById('modal-exito');
+  const direccionSpan = document.getElementById('direccion-entrega');
+  
+  direccionSpan.textContent = direccion;
+  modal.style.display = 'flex';
+}
+
+function cerrarModalExito() {
+  const modal = document.getElementById('modal-exito');
+  modal.style.display = 'none';
+  
+  // Redirigir a la tienda después de cerrar
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500);
+}
+
+function mostrarModalError(mensajeError) {
+  const modal = document.getElementById('modal-error');
+  const detalleError = document.getElementById('detalle-error');
+  
+  // Mostrar el mensaje de error específico
+  detalleError.textContent = mensajeError;
+  
+  modal.style.display = 'flex';
+  
+  // También mostrar en consola
+  console.error('Error de pago:', mensajeError);
+}
+
+function volverATiendaDesdeError() {
+  // Cerrar modal
+  document.getElementById('modal-error').style.display = 'none';
+  
+  // Redirigir a la tienda (el carrito se mantiene en sessionStorage)
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 300);
+}
   </script>
+  <!-- Modal de Éxito -->
+<div class="modal-exito" id="modal-exito">
+  <div class="modal-exito-contenido">
+    <div class="icono-exito">✅</div>
+    <h2>¡Pago Exitoso!</h2>
+    <p style="color: #495057; font-size: 18px; margin-bottom: 20px;">
+      Tu pedido ha sido confirmado correctamente
+    </p>
+    
+    <div class="info-pedido">
+      <h3>📦 Estado de tu Pedido</h3>
+      <ul>
+        <li>
+          <strong>🍳 Preparación:</strong> Tu pedido está siendo preparado ahora mismo
+        </li>
+        <li>
+          <strong><span class="icono-telefono">📞</span>Llamada:</strong> Te llamaremos cuando estemos cerca de tu casa
+        </li>
+        <li>
+          <strong>🚚 Tiempo estimado:</strong> 2-3 horas
+        </li>
+        <li>
+          <strong>📍 Dirección:</strong> <span id="direccion-entrega"></span>
+        </li>
+      </ul>
+    </div>
+    
+    <p style="color: #6c757d; font-size: 14px; margin-top: 20px;">
+      Mantén tu teléfono disponible para coordinar la entrega
+    </p>
+    
+    <button class="btn-cerrar-exito" onclick="cerrarModalExito()">
+      Entendido
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="modal-error" id="modal-error">
+  <div class="modal-error-contenido">
+    <div class="icono-error">❌</div>
+    <h2>Pago No Completado</h2>
+    <p>
+      Lo sentimos, no se pudo completar el pago.<br>
+      Por favor, verifica tu información e intenta nuevamente.
+    </p>
+    
+    <div class="detalle-error" id="detalle-error">
+      <!-- Aquí se mostrará el mensaje de error específico -->
+    </div>
+    
+    <p style="color: #6c757d; font-size: 14px;">
+      Tu carrito seguirá disponible en la tienda
+    </p>
+    
+    <button class="btn-volver-tienda" onclick="volverATiendaDesdeError()">
+      Volver a la Tienda
+    </button>
+  </div>
+</div>
 </body>
 </html>
