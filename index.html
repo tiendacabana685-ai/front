@@ -1260,22 +1260,47 @@
     mostrarProductos(productos);
   }
 
-  function mostrarProductos(lista) {
-    const container = document.getElementById("productos-container");
-    container.innerHTML = "";
+function mostrarProductos(lista) {
+  const container = document.getElementById("productos-container");
+  container.innerHTML = "";
 
-    lista.forEach(p => {
-      container.innerHTML += `
-        <div class="producto-card">
-          <img class="producto-img" src="${p.image}" />
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-          <p class="precio">$${p.price}</p>
-          <button class="btn-agregar" onclick="agregar(${p.id})">Agregar</button>
-        </div>
-      `;
-    });
+  if (lista.length === 0) {
+    container.innerHTML = '<div class="loading">No se encontraron productos 😕</div>';
+    return;
   }
+
+  lista.forEach(p => {
+    // Determinar clase de stock
+    let stockClass = "";
+    let stockText = `Stock: ${p.stock}`;
+    
+    if (p.stock === 0) {
+      stockClass = "agotado";
+      stockText = "Agotado";
+    } else if (p.stock <= 10) {
+      stockClass = "bajo";
+      stockText = `¡Últimos ${p.stock}!`;
+    }
+
+    // Deshabilitar botón si no hay stock
+    const botonDisabled = p.stock === 0 ? 'disabled' : '';
+    const textoBoton = p.stock === 0 ? 'Sin stock' : 'Agregar al carrito';
+
+    container.innerHTML += `
+      <div class="producto-card">
+        <span class="stock-badge ${stockClass}">${stockText}</span>
+        <span class="unidad-medida">${p.unidad}</span>
+        <img class="producto-img" src="${p.image}" alt="${p.title}" />
+        <h3>${p.title}</h3>
+        <p class="producto-descripcion">${p.description}</p>
+        <p class="precio">$${p.price.toFixed(2)}</p>
+        <button class="btn-agregar" onclick="agregar(${p.id})" ${botonDisabled}>
+          ${textoBoton}
+        </button>
+      </div>
+    `;
+  });
+}
 
   function buscar() {
     const texto = document.getElementById("busqueda").value.toLowerCase();
@@ -1283,33 +1308,56 @@
     mostrarProductos(filtrados);
   }
 
-  function agregar(id) {
-    const prod = productos.find(p => p.id == id);
-    const existe = carrito.find(c => c.id == id);
+function agregar(id) {
+  const prod = productos.find(p => p.id == id);
+  
+  // Validar stock disponible
+  if (prod.stock === 0) {
+    alert('⚠️ Producto agotado');
+    return;
+  }
+  
+  const existe = carrito.find(c => c.id == id);
 
-    if (existe) existe.cantidad++;
-    else carrito.push({ ...prod });
-
-    actualizarCarrito();
+  if (existe) {
+    // Verificar que no se exceda el stock
+    if (existe.cantidad >= prod.stock) {
+      alert(`⚠️ Stock insuficiente. Solo quedan ${prod.stock} unidades disponibles.`);
+      return;
+    }
+    existe.cantidad++;
+  } else {
+    carrito.push({ ...prod });
   }
 
-  function actualizarCarrito() {
-    const cantidad = carrito.reduce((s, i) => s + i.cantidad, 0);
-    document.getElementById("carrito-cantidad").textContent = cantidad;
+  actualizarCarrito();
+}
 
-    let html = "";
-    let total = 0;
+function actualizarCarrito() {
+  const cantidad = carrito.reduce((s, i) => s + i.cantidad, 0);
+  document.getElementById("carrito-cantidad").textContent = cantidad;
 
-    carrito.forEach(i => {
-      total += i.cantidad * i.price;
-      html += `
-        <p>${i.title} x${i.cantidad} — $${(i.price * i.cantidad).toFixed(2)}</p>
-      `;
-    });
+  let html = "";
+  let total = 0;
 
-    document.getElementById("carrito-items").innerHTML = html;
-    document.getElementById("total-carrito").textContent = "Total: $" + total.toFixed(2);
-  }
+  carrito.forEach(i => {
+    total += i.cantidad * i.price;
+    html += `
+      <div class="carrito-item">
+        <div class="carrito-item-info">
+          <div class="carrito-item-nombre">${i.title}</div>
+          <div class="carrito-item-unidad">${i.unidad}</div>
+        </div>
+        <div>
+          <strong>x${i.cantidad}</strong> — $${(i.price * i.cantidad).toFixed(2)}
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById("carrito-items").innerHTML = html || '<p style="text-align:center; color:#999;">Carrito vacío</p>';
+  document.getElementById("total-carrito").textContent = "Total: $" + total.toFixed(2);
+}
 
   function abrirCarrito() {
     document.getElementById("modal-carrito").style.display = "block";
